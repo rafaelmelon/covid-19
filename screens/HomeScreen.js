@@ -13,10 +13,35 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ScrollView } from "react-native-gesture-handler";
+import RNPickerSelect from "react-native-picker-select";
 
 import { MonoText } from "../components/StyledText";
 
 const SPAIN = "Spain";
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    width: 200,
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 4,
+    color: "black",
+    paddingRight: 30 // to ensure the text is never behind the icon
+  },
+  inputAndroid: {
+    width: 200,
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    borderColor: "purple",
+    borderRadius: 8,
+    color: "black",
+    paddingRight: 30 // to ensure the text is never behind the icon
+  }
+});
 
 export default function HomeScreen() {
   const [selectedValue, setSelectedValue] = React.useState(SPAIN);
@@ -76,14 +101,11 @@ export default function HomeScreen() {
       .finally(() => setLoadingCountries(false));
   }, []);
 
-  const renderPickerItems = () => {
-    const options = countries.map(country => (
-      <Picker.Item
-        key={country.name}
-        label={`${country.flag} ${country.name}`}
-        value={country.name}
-      />
-    ));
+  const getCountriesOptions = () => {
+    const options = countries.map(country => ({
+      label: `${country.flag} ${country.name}`,
+      value: country.name
+    }));
     return options;
   };
 
@@ -97,15 +119,18 @@ export default function HomeScreen() {
     return "md-arrow-round-forward";
   };
 
-  const getIconColor = iconId => {
+  const getIconColor = (iconId, recovered) => {
     if (iconId === "md-arrow-round-up") {
-      return "red";
+      return !recovered ? "red" : "green";
     }
     if (iconId === "md-arrow-round-down") {
-      return "green";
+      return !recovered ? "green" : "red";
     }
     return "grey";
   };
+
+  const formatNumber = number =>
+    number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
   const getCountryData = array => {
     if (array) {
@@ -143,113 +168,107 @@ export default function HomeScreen() {
     setCountryData(data);
   };
 
-  const renderCountryData = () => {
-    if (countryData) {
-      const { date, confirmed, deaths, recovered } = countryData;
-      return (
-        <>
-          <View style={styles.getStatContainer}>
-            <MonoText
-              style={styles.codeHighlightText}
-            >{`Last updated: ${date}`}</MonoText>
-          </View>
-
-          <View style={styles.getStatContainer}>
-            <Text style={styles.getTitleText}>Cases:</Text>
-            <View style={styles.getValueContainer}>
-              <Text style={styles.getCasesText}>{confirmed.last}</Text>
-              <Ionicons
-                style={{ marginHorizontal: 5 }}
-                color={getIconColor(confirmed.iconId)}
-                name={confirmed.iconId}
-                size={20}
-              />
-              <Text style={styles.getSecondLast}>{confirmed.secondLast}</Text>
-            </View>
-          </View>
-
-          <View style={styles.getStatContainer}>
-            <Text style={styles.getTitleText}>Deaths:</Text>
-            <View style={styles.getValueContainer}>
-              <Text style={styles.getDeathsText}>{deaths.last}</Text>
-              <Ionicons
-                style={{ marginHorizontal: 5 }}
-                color={getIconColor(deaths.iconId)}
-                name={deaths.iconId}
-                size={20}
-              />
-              <Text style={styles.getSecondLast}>{deaths.secondLast}</Text>
-            </View>
-          </View>
-
-          <View style={styles.getStatContainer}>
-            <Text style={styles.getTitleText}>Recovered:</Text>
-            <View style={styles.getValueContainer}>
-              <Text style={styles.getRecoveredText}>{recovered.last}</Text>
-              <Ionicons
-                style={{ marginHorizontal: 5 }}
-                color={getIconColor(recovered.iconId)}
-                name={recovered.iconId}
-                size={20}
-              />
-              <Text style={styles.getSecondLast}>{recovered.secondLast}</Text>
-            </View>
-          </View>
-        </>
-      );
-    }
-
-    return (
-      <View style={styles.getStatContainer}>
-        <Text style={styles.getTitleText}>NO DATA</Text>
-      </View>
-    );
-  };
-
   const renderGlobalData = () => {
     if (globalData) {
       const { confirmed, deaths, recovered } = globalData;
       return (
         <>
-          <View style={styles.welcomeContainer}>
+          <View style={styles.statContent}>
             <Image
-              source={require("../assets/images/covid19.png")}
+              source={require("../assets/images/covid.png")}
               style={styles.welcomeImage}
             />
           </View>
-
-          <View style={styles.getStatContainer}>
-            <MonoText
-              style={styles.codeHighlightText}
-            >{`Last updated: 12312312`}</MonoText>
+          <View style={styles.statContent}>
+            <Text style={styles.titleInfo}>World cases:</Text>
+            <Text style={styles.casesText}>{formatNumber(confirmed)}</Text>
           </View>
-
-          <View style={styles.getStatContainer}>
-            <Text style={styles.getTitleText}>Cases:</Text>
-            <Text style={styles.getCasesText}>{confirmed}</Text>
+          <View style={styles.statContent}>
+            <Text style={styles.titleInfo}>World deaths:</Text>
+            <Text style={styles.deathsText}>{formatNumber(deaths)}</Text>
           </View>
-
-          <View style={styles.getStatContainer}>
-            <Text style={styles.getTitleText}>Deaths:</Text>
-            <Text style={styles.getDeathsText}>{deaths}</Text>
-          </View>
-
-          <View style={styles.getStatContainer}>
-            <Text style={styles.getTitleText}>Recovered:</Text>
-            <Text style={styles.getRecoveredText}>{recovered}</Text>
+          <View style={styles.statContent}>
+            <Text style={styles.titleInfo}>World recovered:</Text>
+            <Text style={styles.recoveredText}>{formatNumber(recovered)}</Text>
           </View>
         </>
       );
     }
 
     return (
-      <View style={styles.getStatContainer}>
-        <Text style={styles.getTitleText}>NO DATA</Text>
+      <View style={styles.statContent}>
+        <Text style={styles.titleInfo}>NO DATA</Text>
       </View>
     );
   };
 
-  console.log(globalData);
+  const renderCountryData = () => {
+    if (countryData) {
+      const { date, confirmed, deaths, recovered } = countryData;
+      return (
+        <>
+          <View style={styles.statContent}>
+            <Text style={styles.titleInfo}>{`Last updated: ${date}`}</Text>
+          </View>
+          <View style={styles.statContent}>
+            <Text style={styles.titleInfo}>Cases:</Text>
+            <View style={styles.statValueContent}>
+              <Text style={styles.casesText}>
+                {formatNumber(confirmed.last)}
+              </Text>
+              <Ionicons
+                style={{ marginHorizontal: 10 }}
+                color={getIconColor(confirmed.iconId)}
+                name={confirmed.iconId}
+                size={20}
+              />
+              <Text style={styles.secondLast}>
+                {formatNumber(confirmed.secondLast)}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.statContent}>
+            <Text style={styles.titleInfo}>Deaths:</Text>
+            <View style={styles.statValueContent}>
+              <Text style={styles.deathsText}>{formatNumber(deaths.last)}</Text>
+              <Ionicons
+                style={{ marginHorizontal: 10 }}
+                color={getIconColor(deaths.iconId)}
+                name={deaths.iconId}
+                size={20}
+              />
+              <Text style={styles.secondLast}>
+                {formatNumber(deaths.secondLast)}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.statContent}>
+            <Text style={styles.titleInfo}>Recovered:</Text>
+            <View style={styles.statValueContent}>
+              <Text style={styles.recoveredText}>
+                {formatNumber(recovered.last)}
+              </Text>
+              <Ionicons
+                style={{ marginHorizontal: 10 }}
+                color={getIconColor(recovered.iconId, true)}
+                name={recovered.iconId}
+                size={20}
+              />
+              <Text style={styles.secondLast}>
+                {formatNumber(recovered.secondLast)}
+              </Text>
+            </View>
+          </View>
+        </>
+      );
+    }
+
+    return (
+      <View style={styles.statContent}>
+        <Text style={styles.titleInfo}>NO DATA</Text>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -262,16 +281,13 @@ export default function HomeScreen() {
         {isLoadingCountries || countries.length === 0 ? (
           <ActivityIndicator />
         ) : (
-          <View style={styles.getSelectPickerContainer}>
-            <Picker
-              selectedValue={selectedValue}
-              style={styles.getSelectPicker}
-              onValueChange={(itemValue, itemIndex) =>
-                handleChangeCountry(itemValue)
-              }
-            >
-              {renderPickerItems()}
-            </Picker>
+          <View style={styles.selectContainer}>
+            <RNPickerSelect
+              value={selectedValue}
+              onValueChange={handleChangeCountry}
+              style={pickerSelectStyles}
+              items={getCountriesOptions()}
+            />
           </View>
         )}
 
@@ -325,15 +341,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff"
   },
-  getSelectPickerContainer: {
+  selectContainer: {
     alignItems: "center",
     marginTop: 20,
     marginBottom: 20
-  },
-  getSelectPicker: {
-    width: 200,
-    alignItems: "center",
-    borderColor: "#aaa"
   },
   developmentModeText: {
     marginBottom: 20,
@@ -343,12 +354,8 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   contentContainer: {
-    paddingTop: 20
-  },
-  welcomeContainer: {
-    alignItems: "center",
-    marginTop: 10,
-    marginBottom: 20
+    paddingTop: 20,
+    paddingBottom: 60
   },
   welcomeImage: {
     width: 100,
@@ -358,108 +365,55 @@ const styles = StyleSheet.create({
     marginLeft: -10,
     marginBottom: 10
   },
-  getStatContainer: {
+  statContent: {
     alignItems: "center",
     marginHorizontal: 50,
     marginBottom: 10
   },
-  getValueContainer: {
+  statValueContent: {
     alignItems: "center",
     flexDirection: "row"
   },
-  homeScreenFilename: {
-    marginVertical: 7
-  },
-  codeHighlightText: {
-    color: "rgba(96,100,109, 0.8)",
-    marginBottom: 5
-  },
-  codeHighlightContainer: {
-    backgroundColor: "rgba(0,0,0,0.05)",
-    borderRadius: 3,
-    paddingHorizontal: 4
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: "rgba(96,100,109, 1)",
-    lineHeight: 24,
-    textAlign: "center",
-    marginBottom: 5
-  },
-  getTitleText: {
+  titleInfo: {
     fontSize: 18,
-    color: "rgba(96,100,109, 1)",
+    color: "rgba(0,0,0, 0.7)",
     lineHeight: 24,
     textAlign: "center",
     marginBottom: 5
   },
-  getSecondLast: {
+  secondLast: {
     fontSize: 14,
-    color: "rgba(96,100,109, 1)",
+    color: "rgba(0,0,0, 0.5)",
+    fontWeight: "bold",
     lineHeight: 24,
     textAlign: "center"
   },
-  getCasesText: {
+  casesText: {
     fontSize: 35,
     fontWeight: "bold",
-    color: "#aaa",
+    color: "#695795",
     lineHeight: 35,
     textAlign: "center",
     marginBottom: 5
   },
-  getDeathsText: {
+  deathsText: {
     fontSize: 35,
     fontWeight: "bold",
-    color: "#696969",
+    color: "#BF5B04",
     lineHeight: 35,
     textAlign: "center",
     marginBottom: 5
   },
-  getRecoveredText: {
+  recoveredText: {
     fontSize: 35,
     fontWeight: "bold",
-    color: "#8ACA2B",
+    color: "#018C0D",
     lineHeight: 35,
     textAlign: "center",
     marginBottom: 5
-  },
-  tabBarInfoContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: "black",
-        shadowOffset: { width: 0, height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3
-      },
-      android: {
-        elevation: 20
-      }
-    }),
-    alignItems: "center",
-    backgroundColor: "#fbfbfb",
-    paddingVertical: 20
-  },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: "rgba(96,100,109, 1)",
-    textAlign: "center"
-  },
-  navigationFilename: {
-    marginTop: 5
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: "center"
-  },
-  helpLink: {
-    paddingVertical: 15
   },
   helpLinkText: {
     fontSize: 14,
-    color: "#2e78b7"
+    color: "#695795"
   }
 });
