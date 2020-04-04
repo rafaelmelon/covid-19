@@ -1,12 +1,8 @@
 {
   "expo": {
-    "name": "covid19",
-    "slug": "covid19",
-    "platforms": [
-      "ios",
-      "android",
-      "web"
-    ],
+    "name": "COVID-19 Report",
+    "slug": "covid19report",
+    "platforms": ["ios", "android", "web"],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -19,11 +15,15 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "zitronensaure.covid19report",
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "zitronensaure.covid19report",
+      "versionCode": 1
     }
   }
 }

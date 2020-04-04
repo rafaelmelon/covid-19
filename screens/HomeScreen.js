@@ -9,7 +9,7 @@ import {
   View,
   ActivityIndicator,
   FlatList,
-  Picker
+  Picker,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { ScrollView } from "react-native-gesture-handler";
@@ -19,6 +19,9 @@ import { MonoText } from "../components/StyledText";
 
 const SPAIN = "Spain";
 const pickerSelectStyles = StyleSheet.create({
+  viewContainer: {
+    alignSelf: "center",
+  },
   inputIOS: {
     width: 200,
     fontSize: 16,
@@ -28,7 +31,7 @@ const pickerSelectStyles = StyleSheet.create({
     borderColor: "gray",
     borderRadius: 4,
     color: "black",
-    paddingRight: 30 // to ensure the text is never behind the icon
+    paddingRight: 30, // to ensure the text is never behind the icon
   },
   inputAndroid: {
     width: 200,
@@ -39,8 +42,8 @@ const pickerSelectStyles = StyleSheet.create({
     borderColor: "purple",
     borderRadius: 8,
     color: "black",
-    paddingRight: 30 // to ensure the text is never behind the icon
-  }
+    paddingRight: 30, // to ensure the text is never behind the icon
+  },
 });
 
 export default function HomeScreen() {
@@ -56,8 +59,8 @@ export default function HomeScreen() {
 
   React.useEffect(() => {
     fetch("https://pomber.github.io/covid19/timeseries.json")
-      .then(response => response.json())
-      .then(json => {
+      .then((response) => response.json())
+      .then((json) => {
         const confirmed = Object.keys(json).reduce(
           (a, b) => a + json[b][json[b].length - 1].confirmed,
           0
@@ -76,35 +79,35 @@ export default function HomeScreen() {
           date: "date",
           confirmed,
           deaths,
-          recovered
+          recovered,
         });
         setCountryData(getCountryData(json[SPAIN]));
         return setCountriesData(json);
       })
-      .catch(error => console.error(error))
+      .catch((error) => console.error(error))
       .finally(() => setLoadingTimeseries(false));
   }, []);
 
   React.useEffect(() => {
     fetch("https://pomber.github.io/covid19/countries.json")
-      .then(response => response.json())
-      .then(json => {
-        const formatJson = Object.keys(json).map(i => ({
+      .then((response) => response.json())
+      .then((json) => {
+        const formatJson = Object.keys(json).map((i) => ({
           name: i,
           flag: json[i].flag,
-          code: json[i].code
+          code: json[i].code,
         }));
 
         return setCountries(formatJson);
       })
-      .catch(error => console.error(error))
+      .catch((error) => console.error(error))
       .finally(() => setLoadingCountries(false));
   }, []);
 
   const getCountriesOptions = () => {
-    const options = countries.map(country => ({
+    const options = countries.map((country) => ({
       label: `${country.flag} ${country.name}`,
-      value: country.name
+      value: country.name,
     }));
     return options;
   };
@@ -129,10 +132,10 @@ export default function HomeScreen() {
     return "grey";
   };
 
-  const formatNumber = number =>
+  const formatNumber = (number) =>
     number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
-  const getCountryData = array => {
+  const getCountryData = (array) => {
     if (array) {
       const lastData = array[array.length - 1];
       const secondLastData = array[array.length - 2];
@@ -142,25 +145,25 @@ export default function HomeScreen() {
         confirmed: {
           last: lastData.confirmed,
           secondLast: secondLastData.confirmed,
-          iconId: getIconId(lastData.confirmed, secondLastData.confirmed)
+          iconId: getIconId(lastData.confirmed, secondLastData.confirmed),
         },
         deaths: {
           last: lastData.deaths,
           secondLast: secondLastData.deaths,
-          iconId: getIconId(lastData.deaths, secondLastData.deaths)
+          iconId: getIconId(lastData.deaths, secondLastData.deaths),
         },
         recovered: {
           last: lastData.recovered,
           secondLast: secondLastData.recovered,
-          iconId: getIconId(lastData.recovered, secondLastData.recovered)
-        }
+          iconId: getIconId(lastData.recovered, secondLastData.recovered),
+        },
       };
     }
 
     return null;
   };
 
-  const handleChangeCountry = country => {
+  const handleChangeCountry = (country) => {
     const countryDataArray = countriesData[country];
     const data = getCountryData(countryDataArray);
 
@@ -298,7 +301,7 @@ export default function HomeScreen() {
 }
 
 HomeScreen.navigationOptions = {
-  header: null
+  header: null,
 };
 
 function DevelopmentModeNotice() {
@@ -339,23 +342,23 @@ function handleHelpPress() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff"
+    backgroundColor: "#fff",
   },
   selectContainer: {
     alignItems: "center",
     marginTop: 20,
-    marginBottom: 20
+    marginBottom: 20,
   },
   developmentModeText: {
     marginBottom: 20,
     color: "rgba(0,0,0,0.4)",
     fontSize: 14,
     lineHeight: 19,
-    textAlign: "center"
+    textAlign: "center",
   },
   contentContainer: {
     paddingTop: 20,
-    paddingBottom: 60
+    paddingBottom: 60,
   },
   welcomeImage: {
     width: 100,
@@ -363,30 +366,30 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
     marginTop: 0,
     marginLeft: -10,
-    marginBottom: 10
+    marginBottom: 10,
   },
   statContent: {
     alignItems: "center",
     marginHorizontal: 50,
-    marginBottom: 10
+    marginBottom: 10,
   },
   statValueContent: {
     alignItems: "center",
-    flexDirection: "row"
+    flexDirection: "row",
   },
   titleInfo: {
     fontSize: 18,
     color: "rgba(0,0,0, 0.7)",
     lineHeight: 24,
     textAlign: "center",
-    marginBottom: 5
+    marginBottom: 5,
   },
   secondLast: {
     fontSize: 14,
     color: "rgba(0,0,0, 0.5)",
     fontWeight: "bold",
     lineHeight: 24,
-    textAlign: "center"
+    textAlign: "center",
   },
   casesText: {
     fontSize: 35,
@@ -394,7 +397,7 @@ const styles = StyleSheet.create({
     color: "#695795",
     lineHeight: 35,
     textAlign: "center",
-    marginBottom: 5
+    marginBottom: 5,
   },
   deathsText: {
     fontSize: 35,
@@ -402,7 +405,7 @@ const styles = StyleSheet.create({
     color: "#BF5B04",
     lineHeight: 35,
     textAlign: "center",
-    marginBottom: 5
+    marginBottom: 5,
   },
   recoveredText: {
     fontSize: 35,
@@ -410,10 +413,10 @@ const styles = StyleSheet.create({
     color: "#018C0D",
     lineHeight: 35,
     textAlign: "center",
-    marginBottom: 5
+    marginBottom: 5,
   },
   helpLinkText: {
     fontSize: 14,
-    color: "#695795"
-  }
+    color: "#695795",
+  },
 });

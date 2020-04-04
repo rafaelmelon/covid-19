@@ -41,7 +41,7 @@ function getHeaderTitle(route) {
 
   switch (routeName) {
     case 'Home':
-      return 'Covid-19 Updates';
+      return 'Covid-19 Report';
     case 'Links':
       return 'Data Sources';
   }
