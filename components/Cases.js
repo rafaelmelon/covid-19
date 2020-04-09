@@ -64,7 +64,7 @@ export default function Cases({ countryData }) {
             decimalPlaces: 0,
           }}
           style={{
-            fontFamily: "arial",
+            fontFamily: "BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu, 'Helvetica Neue', sans-serif",
           }}
         />
       </View>

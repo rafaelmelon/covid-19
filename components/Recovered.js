@@ -64,7 +64,8 @@ export default function Recovered({ countryData }) {
             decimalPlaces: 0,
           }}
           style={{
-            fontFamily: "arial",
+            fontFamily:
+              "BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu, 'Helvetica Neue', sans-serif",
           }}
         />
       </View>

@@ -7,11 +7,10 @@ import {
   View,
   ActivityIndicator,
   Dimensions,
+  Animated,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { ScrollView } from "react-native-gesture-handler";
 import RNPickerSelect from "react-native-picker-select";
-import { LineChart } from "react-native-chart-kit";
 
 import Cases from "../components/Cases";
 import Deaths from "../components/Deaths";
@@ -26,7 +25,6 @@ const pickerSelectStyles = StyleSheet.create({
   },
   inputIOS: {
     width: 300,
-    fontSize: 18,
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderWidth: 1,
@@ -38,7 +36,6 @@ const pickerSelectStyles = StyleSheet.create({
   },
   inputAndroid: {
     width: 300,
-    fontSize: 18,
     paddingHorizontal: 10,
     paddingVertical: 8,
     borderWidth: 1,
@@ -60,6 +57,38 @@ export default function HomeScreen() {
 
   const [isLoadingCountries, setLoadingCountries] = React.useState(true);
   const [isLoadingTimeSeries, setLoadingTimeseries] = React.useState(true);
+
+  const scale = React.useRef(new Animated.Value(1)).current;
+  const rotate = React.useRef(new Animated.Value(0)).current;
+
+  React.useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.delay(100),
+        Animated.timing(scale, {
+          toValue: 1,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(rotate, {
+          toValue: 1,
+          duration: 10000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(scale, {
+          toValue: 0.9,
+          duration: 500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(rotate, {
+          toValue: 0,
+          duration: 10000,
+          useNativeDriver: true,
+        }),
+      ]),
+      {}
+    ).start();
+  }, []);
 
   React.useEffect(() => {
     fetch("https://pomber.github.io/covid19/timeseries.json")
@@ -150,8 +179,6 @@ export default function HomeScreen() {
           "recovered"
         ),
         stats: [
-          days[days.length - 6],
-          days[days.length - 7],
           days[days.length - 5],
           days[days.length - 4],
           days[days.length - 3],
@@ -178,9 +205,25 @@ export default function HomeScreen() {
       return (
         <>
           <View style={styles.row}>
-            <Image
+            <Animated.Image
               source={require("../assets/images/covid.png")}
-              style={styles.welcomeImage}
+              style={{
+                width: 100,
+                height: 80,
+                resizeMode: "contain",
+                marginTop: 0,
+                marginLeft: -10,
+                marginBottom: 10,
+                transform: [
+                  {
+                    scale,
+                    rotate: rotate.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: ["0deg", "360deg"],
+                    }),
+                  },
+                ],
+              }}
             />
           </View>
           <View style={styles.row}>
@@ -329,14 +372,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     paddingTop: 20,
     paddingBottom: 60,
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: "contain",
-    marginTop: 0,
-    marginLeft: -10,
-    marginBottom: 10,
   },
   row: {
     alignItems: "center",
